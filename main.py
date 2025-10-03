@@ -91,6 +91,8 @@ def main() -> None:
                 previous_db = previous_db
             )
 
+            print("\n")
+
             save_all.save_all(
                 original_db = original_db, 
                 chosen_db = chosen_db,
@@ -167,6 +169,8 @@ def main() -> None:
 
             report_edit.edit_paper(target_db = target_db)
 
+            print("\n")
+
             save_all.save_all(
                 original_db = original_db, 
                 chosen_db = chosen_db,
@@ -193,6 +197,8 @@ def main() -> None:
 
         # save
         elif choice == '9':
+            print("\n")
+
             save_all.save_all(
                 original_db = original_db, 
                 chosen_db = chosen_db,
