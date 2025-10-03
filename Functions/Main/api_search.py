@@ -16,7 +16,7 @@ base_url = "https://api.springernature.com/openaccess/json"
 headers = {
     "User-Agent": "2D-Materials-DB/1.0 (katlindquist6282@gmail.com)"
 }
-path = r"C:\Users\kwinw\OneDrive\Desktop\Junior S1\Yang. Lab\Structured Database for 2D Materials\Databases\original_database.json"
+path = r"C:\Users\kwinw\OneDrive\Desktop\Junior S1\Yang. Lab\Structured Database for 2D Materials\2d-material-database\Databases\original_database.json"
 
 
 def api_search(query: str, 

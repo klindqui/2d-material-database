@@ -3,6 +3,7 @@
 from dataclasses import dataclass, field, replace
 from typing import  Optional, List, Dict, Tuple
 import json
+import os
 from Classes.report_class import Report # import Report class
 
 
@@ -61,6 +62,7 @@ class Database:
     
     # persistence
     def save(self, filepath: str) -> None:
+        os.makedirs(os.path.dirname(filepath), exist_ok=True)
         data = [r.to_dict() for r in self._by_doi.values()]
         with open(filepath, 'w', encoding='utf-8') as f:
             json.dump(data, f, indent=2)

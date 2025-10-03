@@ -8,7 +8,8 @@ def save_all(
         final_db: database_class.Database
         ) -> None:
     
-    base = r"C:\Users\kwinw\OneDrive\Desktop\Junior S1\Yang. Lab\Structured Database for 2D Materials\Databases"
+    # base = r"C:\Users\kwinw\OneDrive\Desktop\Junior S1\Yang. Lab\Structured Database for 2D Materials\Databases"
+    base = r"C:\Users\kwinw\OneDrive\Desktop\Junior S1\Yang. Lab\Structured Database for 2D Materials\2d-material-database\Databases"
 
     db_files = {
         "original_database.json": original_db,
