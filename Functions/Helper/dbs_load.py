@@ -3,7 +3,8 @@
 from Classes import database_class
 
 def create_databases() -> dict[str, database_class.Database]:
-    base = r"C:\Users\kwinw\OneDrive\Desktop\Junior S1\Yang. Lab\Structured Database for 2D Materials\Databases"
+    # base = r"C:\Users\kwinw\OneDrive\Desktop\Junior S1\Yang. Lab\Structured Database for 2D Materials\Databases"
+    base = r"C:\Users\kwinw\OneDrive\Desktop\Junior S1\Yang. Lab\Structured Database for 2D Materials\2d-material-database\Databases"
 
     dbs = {
         "original": database_class.Database("Original Database"),

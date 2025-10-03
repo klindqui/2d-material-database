@@ -8,8 +8,11 @@ def save_all(
         final_db: database_class.Database
         ) -> None:
     
-    # base = r"C:\Users\kwinw\OneDrive\Desktop\Junior S1\Yang. Lab\Structured Database for 2D Materials\Databases"
+    import os
+    
     base = r"C:\Users\kwinw\OneDrive\Desktop\Junior S1\Yang. Lab\Structured Database for 2D Materials\2d-material-database\Databases"
+
+    os.makedirs(base, exist_ok=True)
 
     db_files = {
         "original_database.json": original_db,
@@ -20,6 +23,6 @@ def save_all(
     }
 
     for filename, db in db_files.items():
-        db.save(f"{base}\\{filename}")
+        db.save(os.path.join(base, filename))
 
     print("All databases saved.")

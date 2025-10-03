@@ -4,6 +4,7 @@ from dataclasses import dataclass, field, replace
 from typing import  Optional, List, Dict, Tuple
 import json
 import os
+from pathlib import Path
 from Classes.report_class import Report # import Report class
 
 
@@ -62,14 +63,28 @@ class Database:
     
     # persistence
     def save(self, filepath: str) -> None:
-        os.makedirs(os.path.dirname(filepath), exist_ok=True)
+        p = Path(filepath)
+        p.parent.mkdir(parents=True, exist_ok=True)
+
         data = [r.to_dict() for r in self._by_doi.values()]
         with open(filepath, 'w', encoding='utf-8') as f:
             json.dump(data, f, indent=2)
-        print(f"Saved {len(data)} reports to {filepath}")
+        print(f"Saved {len(data)} reports to {p}")
 
     def load(self, filepath: str) -> None:
-        try:
+        p = Path(filepath)
+
+        if not p.exists():                                # handle missing file
+            print(f"{p} not found. Starting with an empty database.")
+            return
+        with p.open('r', encoding='utf-8') as f:
+            data = json.load(f)
+        for item in data:
+            r = Report.from_dict(item)                    # assumes Report is imported
+            self.add_report(r)
+        print(f"Loaded {len(data)} reports from {p}")
+
+        '''try:
             with open(filepath, "r", encoding='utf-8') as f:
                 data = json.load(f)
             for item in data:
@@ -77,4 +92,4 @@ class Database:
                 self.add_report(r)
             print (f"Loaded {len(data)} reports from {filepath}")
         except FileNotFoundError:
-            print (f"File {filepath} not found. Starting with an empty database.")
+            print (f"File {filepath} not found. Starting with an empty database.")'''

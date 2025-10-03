@@ -56,6 +56,8 @@ def add_report(
             if not doi:
                 return
             
+            print("\n")
+            
             if not previous_db.contains_doi(doi):
                 print(f"DOI {doi} was not found in {previous_db.name}. Try again.")
                 continue
