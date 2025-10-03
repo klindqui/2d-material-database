@@ -121,6 +121,15 @@ def main() -> None:
                 target_db = target_db
             )
 
+            print("\n")
+
+            save_all.save_all(
+                original_db = original_db, 
+                chosen_db = chosen_db,
+                cleaned_db = cleaned_db,
+                prepared_db = prepared_db,
+                final_db = final_db
+            )
 
         # list reports in a database
         elif choice == '4':
