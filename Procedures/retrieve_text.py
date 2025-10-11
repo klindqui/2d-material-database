@@ -16,15 +16,17 @@ except ImportError:
 
 from Classes import database_class, report_class
 from Procedures import clean_text
+from Functions.Main import report_edit
+
 
 importlib.reload(report_class)
 importlib.reload(database_class)
+importlib.reload(clean_text)
 
 def return_url(
         *,
-        original_db: database_class.Database,
-        cleaned_db: database_class.Database
-) -> str:
+        original_db: database_class.Database
+) -> report_class.Report:
     
     while True:
         doi = input("Enter DOI (enter to cancel): ").strip()
@@ -38,8 +40,7 @@ def return_url(
             print(f"This database, {original_db.name}, does not contain the DOI {doi}")
             continue
 
-    url = report.link
-    return url
+    return report
 
 def download_content(url: str) -> bytes:
     headers = {
@@ -70,8 +71,10 @@ def get_paper_text(
         original_db: database_class.Database,
         cleaned_db: database_class.Database,
         keep_only_sections: Optional[Tuple[str, ...]]
-) -> str:
-    url = return_url(original_db = original_db, cleaned_db = cleaned_db)
+) -> None:
+    report = return_url(original_db = original_db, cleaned_db = cleaned_db)
+    url = report.link
+
     if not url:
         return ""
 
@@ -89,8 +92,6 @@ def get_paper_text(
         ascii_only = False,
     )
 
-    return cleaned
+    cleaned_report: report_class.Report = cleaned_db.get(report.DOI)
 
-def add_to_database(
-        
-): pass
+    cleaned_report.attach_text(cleaned)
