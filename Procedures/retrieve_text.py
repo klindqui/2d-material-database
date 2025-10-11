@@ -13,7 +13,7 @@ except ImportError:
     raise ImportError("Please install PyMuPDF: pip install pymupdf")
 
 from Classes import database_class, report_class
-import clean_text
+from Procedures import clean_text
 
 importlib.reload(report_class)
 importlib.reload(database_class)
