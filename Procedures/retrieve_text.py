@@ -27,13 +27,12 @@ def return_report(
     while True:
         doi = input("Enter DOI (enter to cancel): ").strip()
         if not doi:
-            return
+            return None
     
         if original_db.contains_doi(doi):
             report: report_class.Report = original_db.get(doi)
             return report
-        else:
-            print(f"This database, {original_db.name}, does not contain the DOI {doi}")
+        print(f"This database, {original_db.name}, does not contain the DOI {doi}")
 
 
 def download_content(url: str) -> bytes:
@@ -57,10 +56,40 @@ def extract_text_from_pdf(pdf_bytes: bytes) -> str:
     return "\n".join(text_parts)
 
 
-def extract_text_from_html(html_bytes: bytes, url: str = None) -> str:
+def extract_text_from_html(html_bytes: bytes, url: Optional[str] = None) -> str:
     html_str = html_bytes.decode("utf-8", errors = "ignore")
     text = trafilatura.extract(html_str, include_links = False, include_formatting = False, url = url)
     return text or ""
+
+def extract_raw_text(url: str) -> str:
+    data = download_content(url)
+    if data[:4] == b"%PDF":
+        return extract_text_from_pdf(data)
+    return extract_text_from_html(data, url)
+
+def upsert_cleaned_db_entry(
+        *,
+        cleaned_db: database_class.Database,
+        source_report: report_class.Report,
+        cleaned_text: str
+) -> None:
+    doi = source_report.DOI
+    if cleaned_db.contains_doi(doi):
+        target: report_class.Report = cleaned_db.get(doi)
+        target.attach_text(cleaned_text)
+        print(f"Updated cleaned report for {doi} in {cleaned_db.name}")
+    else:
+        new_rep = report_class.Report(
+            DOI = source_report.DOI,
+            title = source_report.title,
+            link = source_report.link,
+            notes = source_report.notes,
+            text = None
+        )
+
+        new_rep.attach_text(cleaned_text)
+        cleaned_db.add_report(new_rep)
+        print(f"Added new cleaned report for {doi} to {cleaned_db.name}")
 
 
 def get_paper_text(
@@ -77,14 +106,8 @@ def get_paper_text(
     if not url:
         print("Selected report has no link/URL")
         return ""
-
-    content = download_content(url)
-
-    if content[:4] == b"%PDF":
-        raw_text = extract_text_from_pdf(content)
-    else:
-        raw_text = extract_text_from_html(content, url)
-
+    
+    raw_text = extract_raw_text(url)
     cleaned = clean_text.clean_text(
         raw_text,
         keep_only_sections = keep_only_sections,
@@ -92,12 +115,10 @@ def get_paper_text(
         ascii_only = False,
     )
 
-    doi = getattr(report, "DOI", None)
-    if doi and cleaned_db.contains_doi(doi):
-        cleaned_report: report_class.Report = cleaned_db.get(doi)
-        if hasattr(cleaned_report, "attach_text"):
-            cleaned_report.attach_text(cleaned)
-    else:
-        pass
-    
+    upsert_cleaned_db_entry(
+        cleaned_db = cleaned_db,
+        source_report = report,
+        cleaned_text = cleaned
+    )
+
     return cleaned
