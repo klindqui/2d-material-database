@@ -1,12 +1,13 @@
 import textwrap
 from pathlib import Path
 import fitz
+from typing import Optional
 
 def text_to_pdf(
         text: str,
         out_path: str,
         *,
-        title: str | None = None,
+        title: Optional[str] = None,
         page_size: str = "letter",
         margins: tuple[float, float, float, float] = (72, 72, 72, 72),
         fontname: str = "helv",

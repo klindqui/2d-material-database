@@ -13,7 +13,7 @@ except ImportError:
     raise ImportError("Please install PyMuPDF: pip install pymupdf")
 
 from Classes import database_class, report_class
-from Procedures import clean_text
+from Procedures import clean_text, formula_preserver
 
 importlib.reload(report_class)
 importlib.reload(database_class)
@@ -108,12 +108,22 @@ def get_paper_text(
         return ""
     
     raw_text = extract_raw_text(url)
-    cleaned = clean_text.clean_text(
+
+    cleaned = formula_preserver.preserve_during_clean(
         raw_text,
+        clean_text.clean_text,
         keep_only_sections = keep_only_sections,
         lowercase = False,
         ascii_only = False,
+
     )
+    
+    #cleaned = clean_text.clean_text(
+    #    raw_text,
+    #    keep_only_sections = keep_only_sections,
+    #    lowercase = False,
+    #    ascii_only = False,
+    #)
 
     upsert_cleaned_db_entry(
         cleaned_db = cleaned_db,
