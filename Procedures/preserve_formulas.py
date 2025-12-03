@@ -1,6 +1,17 @@
 import re
 from chemdataextractor.doc import Document
 
+LATEX_MATH_PATTERN = re.compile(
+    r"(\\\(.+?\\\))"          # \( ... \)
+    r"|"
+    r"(\\\[.+?\\\])"          # \[ ... \]
+    r"|"
+    r"(\$\$.+?\$\$)"          # $$ ... $$
+    r"|"
+    r"(\$[^$]+\$)",           # $ ... $
+    re.DOTALL,
+)
+
 def extract_all_formulas(text: str):
     # use chemDataExtractor for standard chemicals
     cde_formulas = {cem.text for cem in Document(text).cems}
@@ -15,8 +26,6 @@ def extract_all_formulas(text: str):
     alloys = set(re.findall(alloy_pattern, text))
     # chains = set(re.findall(formula_pattern, text))
 
-    return sorted(alloys | cde_formulas)
+    latex_formulas = {m.group(0) for m in LATEX_MATH_PATTERN.finditer(text)}
 
-# text = "Ti-6Al-4V and CuSO4·5H2O were analyzed. MoS2 has been doped with Fe"
-# doc = Document(text)
-# print([cem.text for cem in doc.cems])
+    return sorted(alloys | cde_formulas| latex_formulas )
