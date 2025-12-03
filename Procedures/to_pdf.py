@@ -13,6 +13,7 @@ def text_to_pdf(
         fontname: str = "helv",
         fontsize: float = 11.0,
         line_height: float = 1.4,
+        fontfile: Optional[str] = None,
 ):
     SIZES = {"letter": (612, 792), "a4": (595, 842)}
     page_w, page_h = SIZES.get(page_size.lower(), SIZES["letter"])
@@ -41,7 +42,7 @@ def text_to_pdf(
     page, y = new_page()
     used = 0
     if title:
-        page.insert_text((ml, y), title, fontname=fontname, fontsize=fontsize+3)
+        page.insert_text((ml, y), title, fontname=fontname, fontsize=fontsize+3, fontfile=fontfile)
         y += (fontsize+3) * line_height
         used += 1
 
@@ -49,7 +50,7 @@ def text_to_pdf(
         if used >= lines_per_page:
             page, y = new_page()
             used = 0
-        page.insert_text((ml, y), ln, fontname=fontname, fontsize=fontsize)
+        page.insert_text((ml, y), ln, fontname=fontname, fontsize=fontsize, fontfile=fontfile)
         y += line_px
         used += 1
 

@@ -14,8 +14,6 @@ except ImportError:
 
 from Classes import database_class, report_class
 from Procedures import clean_text, formula_preserver
-from Procedures.formula_preserver import latex_to_unicode
-
 
 importlib.reload(report_class)
 importlib.reload(database_class)
@@ -119,8 +117,6 @@ def get_paper_text(
         lowercase = False,
         ascii_only = False,
     )
-
-    cleaned = latex_to_unicode(cleaned)
 
     upsert_cleaned_db_entry(
         cleaned_db = cleaned_db,

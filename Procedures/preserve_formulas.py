@@ -28,4 +28,4 @@ def extract_all_formulas(text: str):
 
     latex_formulas = {m.group(0) for m in LATEX_MATH_PATTERN.finditer(text)}
 
-    return sorted(alloys | cde_formulas| latex_formulas )
+    return sorted(alloys | cde_formulas| latex_formulas)

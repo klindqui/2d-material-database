@@ -24,5 +24,18 @@ def preserve_during_clean(text: str, cleaner, **kwargs):
 
 from pylatexenc.latex2text import LatexNodes2Text
 
-def latex_to_unicode(s: str) -> str:
-    return LatexNodes2Text(math_mode='text').latex_to_text(s)
+def latex_to_unicode(text: str) -> str:
+    pattern = preserve_formulas.LATEX_MATH_PATTERN
+    conv = LatexNodes2Text(math_mode="text")
+
+    def repl(m: re.Match) -> str:
+        match_text = None
+        for g in m.groups():
+            if g:
+                match_text = g
+                break
+        if match_text is None:
+            return m.group(0)
+        return conv.latex_to_text(match_text)
+
+    return pattern.sub(repl, text)
