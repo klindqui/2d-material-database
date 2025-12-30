@@ -190,19 +190,6 @@ def get_paper_text(
         text_ref=blob_url,
     )
 
-    # OPTIONAL but recommended:
-    # also store the raw link somewhere you can see it (notes is simplest)
-    # if your Report.notes is used for other things, we can make a dedicated field later.
-    try:
-        if cleaned_db.contains_doi(report.DOI):
-            r = cleaned_db.get(report.DOI)
-            existing = (r.notes or "")
-            extra = f"\nRAW_TEXT_URL: {raw_url}\nREL_TXT_PATH: {rel_path}"
-            r.notes = (existing + extra).strip()
-    except Exception:
-        pass
-
-
     # Optional small JSON sidecar that points to the txt
     if also_write_sidecar_json:
         sidecar_path = out_dir / f"{safe}.json"
