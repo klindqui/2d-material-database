@@ -26,23 +26,12 @@ importlib.reload(formula_preserver)
 importlib.reload(to_txt)
 
 
-# ----------------------------
-# Small utilities
-# ----------------------------
-
 def _safe_filename_from_doi(doi: str, max_len: int = 180) -> str:
-    """
-    Make a stable, filesystem-safe name from a DOI.
-    """
     s = (doi or "").strip()
     s = s.replace("/", "_")
     s = re.sub(r"[^A-Za-z0-9._-]+", "_", s).strip("_")
     return s[:max_len] if s else "unknown_doi"
 
-
-# ----------------------------
-# Pick report by DOI
-# ----------------------------
 
 def return_report(*, original_db: database_class.Database) -> Optional[report_class.Report]:
     while True:
@@ -55,10 +44,6 @@ def return_report(*, original_db: database_class.Database) -> Optional[report_cl
 
         print(f"This database, {original_db.name}, does not contain the DOI {doi}")
 
-
-# ----------------------------
-# Download + extract text
-# ----------------------------
 
 def download_content(url: str) -> bytes:
     headers = {"User-Agent": "Mozilla/5.0 (compatible; PaperTextBot/1.0)"}
@@ -93,15 +78,11 @@ def extract_raw_text(url: str) -> str:
     return extract_text_from_html(data, url)
 
 
-# ----------------------------
-# Store ONLY a reference in cleaned_db
-# ----------------------------
-
 def upsert_cleaned_report_text_ref(
     *,
     cleaned_db: database_class.Database,
     source_report: report_class.Report,
-    text_ref: str,  # path to the .txt file
+    text_ref: str, 
 ) -> None:
     doi = source_report.DOI
 
@@ -123,10 +104,6 @@ def upsert_cleaned_report_text_ref(
     print(f"Added new cleaned report ref for {doi} to {cleaned_db.name}")
 
 
-# ----------------------------
-# Main pipeline: fetch -> clean -> save txt -> store ref
-# ----------------------------
-
 def get_paper_text(
     *,
     original_db: database_class.Database,
@@ -135,11 +112,7 @@ def get_paper_text(
     cleaned_txt_dir: str = "Cleaned_TXT",
     also_write_sidecar_json: bool = False,
 ) -> str:
-    """
-    Old behavior (BAD): stored full cleaned text in cleaned_db.
-    New behavior (GOOD): writes Cleaned_TXT/<doi>.txt and stores that path in cleaned_db.
-    Returns cleaned text so you can print/check it.
-    """
+    
     report = return_report(original_db=original_db)
     if report is None:
         return ""
@@ -159,10 +132,8 @@ def get_paper_text(
         ascii_only=False,
     )
 
-    # Convert LaTeX → Unicode for readability in the .txt
     cleaned_for_txt = formula_preserver.latex_to_unicode(cleaned)
 
-    # Save into Cleaned_TXT/
     out_dir = Path(cleaned_txt_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
@@ -175,7 +146,6 @@ def get_paper_text(
         title=report.title or "My Cleaned Paper",
     )
 
-    # Store BOTH: a clickable GitHub link (text_ref) + also keep raw link in notes
     repo = "klindqui/2d-material-database"
     branch = "main"
 
@@ -183,14 +153,12 @@ def get_paper_text(
     blob_url = f"https://github.com/{repo}/blob/{branch}/{rel_path}"
     raw_url  = f"https://raw.githubusercontent.com/{repo}/{branch}/{rel_path}"
 
-    # Put the clickable "view" link in the DB text field
     upsert_cleaned_report_text_ref(
         cleaned_db=cleaned_db,
         source_report=report,
         text_ref=blob_url,
     )
 
-    # Optional small JSON sidecar that points to the txt
     if also_write_sidecar_json:
         sidecar_path = out_dir / f"{safe}.json"
         to_txt.write_json_with_text_file_ref(

@@ -20,9 +20,7 @@ def write_paged_text_file(
     page_break: str = "\n\n\f\n\n",
     encoding: str = "utf-8",
 ) -> Path:
-    """
-    Writes a readable .txt with soft page breaks (form-feed) similar to your PDF paging logic.
-    """
+   
     SIZES = {"letter": (612, 792), "a4": (595, 842)}
     page_w, page_h = SIZES.get(page_size.lower(), SIZES["letter"])
     ml, mt, mr, mb = margins
@@ -75,14 +73,11 @@ def write_json_with_text_file_ref(
     preview_chars: int = 500,
     include_hash: bool = True,
 ) -> Path:
-    """
-    Writes a small JSON that references the txt file path (NOT embedding the whole text).
-    """
+    
     txt = Path(txt_path)
     out = Path(json_out_path)
     out.parent.mkdir(parents=True, exist_ok=True)
 
-    # IMPORTANT: store repo-friendly path, not file:/// URI
     text_path = txt.as_posix().replace("\\", "/")
 
     repo = "klindqui/2d-material-database"
@@ -115,7 +110,6 @@ def write_json_with_text_file_ref(
     return out
 
 def github_blob_url(repo_path: str, *, branch: str = "main") -> str:
-    # repo_path like "Cleaned_TXT/10.1038_....txt"
     repo_path = repo_path.replace("\\", "/")
     return f"https://github.com/klindqui/2d-material-database/blob/{branch}/{repo_path}"
 
